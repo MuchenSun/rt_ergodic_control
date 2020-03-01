@@ -36,15 +36,18 @@ def convert_traj2ck(basis, xt):
     N = len(xt)
     return np.sum([basis.fk(x) for x in xt], axis=0) / N
 
-def convert_ck2dist(basis, ck, grid=None):
+# 2020-03-01: add "size" parameter to support customizable exploration area size
+def convert_ck2dist(basis, ck, grid=None, size=1.):
     '''
     This utility function converts a ck into its time-averaged
     statistics
     '''
     if grid is None:
         print('--Assuming square grid')
-        grid = np.meshgrid(*[np.linspace(0, 1.)
-                                for _ in range(2)])
+        # grid = np.meshgrid(*[np.linspace(0, 1.)
+        #                         for _ in range(2)])
+        grid = np.meshgrid(*[np.linspace(0, size)
+                             for _ in range(2)])
         grid = np.c_[grid[0].ravel(), grid[1].ravel()]
 
     val = np.stack([np.dot(basis.fk(x), ck) for x in grid])

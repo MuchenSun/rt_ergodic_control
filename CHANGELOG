@@ -1,0 +1,3 @@
+2020-03-01
+1. create a "simulation" object to handle all simulation-related operations
+2. add "size" parameter to: "utils.convert_ck2dist", "double_integrator", "target_dist" in order to support customizable exploration area size

@@ -3,20 +3,29 @@ from gym.spaces import Box
 
 class DoubleIntegrator(object):
 
+    # 2020-03-01: add "size" parameter to support customizable exploration area size
+    def __init__(self, size=1.0):
 
-    def __init__(self):
-
+        # self.observation_space = Box(np.array([0., 0., -np.inf, -np.inf]),
+        #                              np.array([1.0, 1.0, np.inf, np.inf]),
+        #                              dtype=np.float32)
         self.observation_space = Box(np.array([0., 0., -np.inf, -np.inf]),
-                                    np.array([1.0, 1.0, np.inf, np.inf]),
-                                    dtype=np.float32)
+                                     np.array([size, size, np.inf, np.inf]),
+                                     dtype=np.float32 )
 
-        self.action_space = Box(np.array([-1., -1.]),
-                                    np.array([1.0, 1.0]),
-                                    dtype=np.float32)
+        # self.action_space = Box(np.array([-1., -1.]),
+        #                         np.array([1.0, 1.0]),
+        #                         dtype=np.float32 )
+        self.action_space = Box(np.array([-size, -size]),
+                                np.array([size, size]),
+                                dtype=np.float32 )
 
+        # self.explr_space = Box(np.array([0., 0.]),
+        #                        np.array([1.0, 1.0]),
+        #                        dtype=np.float32 )
         self.explr_space = Box(np.array([0., 0.]),
-                                    np.array([1.0, 1.0]),
-                                    dtype=np.float32)
+                               np.array([size, size]),
+                               dtype=np.float32)
 
         self.explr_idx  = [0, 1]
 

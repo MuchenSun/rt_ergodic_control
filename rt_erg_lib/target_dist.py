@@ -1,4 +1,4 @@
-import rospy
+# import rospy
 
 import numpy as np
 import numpy.random as npr
@@ -10,24 +10,24 @@ class TargetDist(object):
     unity env
     '''
 
-    def __init__(self, num_nodes=2, num_pts=50):
+    # 2020-03-01: add "size" parameter to support customizable exploration area size
+    def __init__(self, num_pts, means, vars, size):
         
         # TODO: create a message class for this 
         # rospy.Subscriber('/target_distribution',  CLASSNAME, self.callback)
 
         self.num_pts = num_pts
-        grid = np.meshgrid(*[np.linspace(0, 1, num_pts) for _ in range(2)])
+        grid = np.meshgrid(*[np.linspace(0, size, num_pts) for _ in range(2)])
         self.grid = np.c_[grid[0].ravel(), grid[1].ravel()]
 
         # self.means = [npr.uniform(0.2, 0.8, size=(2,))
         #                     for _ in range(num_nodes)]
-        self.means = [np.array([0.2, 0.2]), np.array([0.6,0.6]), np.array([0.2, 0.8])]
-        self.vars  = [np.array([0.1,0.1])**2, np.array([0.1,0.1])**2, np.array([0.1,0.1])**2]
-
-        print("means: ", self.means)
-
         # self.vars  = [npr.uniform(0.05, 0.2, size=(2,))**2
         #                     for _ in range(num_nodes)]
+        self.means = means
+        self.vars  = vars
+
+        print("means: ", self.means)
 
         self.has_update = False
         self.grid_vals = self.__call__(self.grid)

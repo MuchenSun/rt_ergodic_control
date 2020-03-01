@@ -1,7 +1,7 @@
 import numpy as np
-from basis import Basis
-from barrier import Barrier
-from replay_buffer import ReplayBuffer
+from .basis import Basis
+from .barrier import Barrier
+from .replay_buffer import ReplayBuffer
 
 class RTErgodicControl(object):
 
