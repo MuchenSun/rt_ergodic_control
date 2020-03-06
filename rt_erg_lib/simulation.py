@@ -17,7 +17,9 @@ class simulation():
 
     def start(self, report=False):
         self.log = {'trajectory': []}
-        state = self.env.reset()
+        init_state = np.array([3., 3., 0.2, 0.2])
+        state = self.env.reset(init_state)
+        # state = self.env.reset(None)
         for t in tqdm(range(self.tf)):
             start_time = time.time()
             ctrl = self.erg_ctrl(state)

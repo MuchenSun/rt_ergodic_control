@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 Qsim = np.diag([0.2, np.deg2rad(1.0)])**2
 Rsim = np.diag([0.1, np.deg2rad(10.0)])**2
 
-DT = 2.0  # time tick [s]
+DT = 1.0  # time tick [s]
 SIM_TIME = 100.0  # simulation time [s]
 MAX_RANGE = 30.0  # maximum observation range
 STATE_SIZE = 3  # State size [x,y,yaw]

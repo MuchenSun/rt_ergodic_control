@@ -1,7 +1,7 @@
 import numpy as np
 from gym.spaces import Box
 
-class DoubleIntegrator(object):
+class NoisyDoubleIntegrator(object):
 
     # 2020-03-01: add "size" parameter to support customizable exploration area size
     def __init__(self, size=1.0):
@@ -83,6 +83,5 @@ class DoubleIntegrator(object):
         Basic euler step
         '''
         # TODO: include ctrl clip
-        # print("self.f: ", self.f(self.state, a))
         self.state = self.state + self.f(self.state, a) * self.dt
         return self.state.copy()
