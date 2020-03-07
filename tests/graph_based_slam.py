@@ -11,11 +11,11 @@ Ref
 """
 
 import numpy as np
+from numpy import sin, cos
 import math
 import copy
 import itertools
 import matplotlib.pyplot as plt
-
 
 #  Simulation parameter
 Qsim = np.diag([0.2, np.deg2rad(1.0)])**2
@@ -232,6 +232,8 @@ def observation(xTrue, xd, u, RFID):
     ud2 = u[1, 0] + np.random.randn() * Rsim[1, 1]
     ud = np.array([[ud1, ud2]]).T
 
+    print("xd: ", xd)
+    print("ud: ", ud)
     xd = motion_model(xd, ud)
 
     return xTrue, z, xd, ud
@@ -314,6 +316,10 @@ def main():
                          hxDR[1, :].flatten(), "-k")
                 plt.plot(x_opt[0, :].flatten(),
                          x_opt[1, :].flatten(), "-r")
+
+                # show arrow
+                plt.quiver(hxTrue[0, -1], hxTrue[1, -1], cos(hxTrue[2, -1]), sin(hxTrue[2, -1]))
+
                 plt.axis("equal")
                 plt.grid(True)
                 plt.title("Time" + str(time)[0:5])
