@@ -23,7 +23,7 @@ erg_ctrl = RTErgodicControl(model, t_dist, horizon=20, num_basis=10, batch_size=
 erg_ctrl.phik = convert_phi2phik(erg_ctrl.basis, t_dist.grid_vals, t_dist.grid)
 
 """start simulation"""
-tf = 1500
+tf = 2000
 # landmarks = np.array([
 #     [4.2, 3.3],
 #     [5.4, 8.2],
@@ -35,6 +35,6 @@ landmarks = np.random.uniform(0.2, 9.8, size=(8,2))
 sensor_range = 3
 erg_ctrl_sim = simulation_slam(size, init_state, t_dist, model, erg_ctrl, env, tf, landmarks, sensor_range)
 erg_ctrl_sim.start(report=True)
-erg_ctrl_sim.animate(point_size=1, show_label=True, show_traj=True)
+erg_ctrl_sim.animate(point_size=1, show_label=False, show_traj=True)
 erg_ctrl_sim.plot(point_size=1)
 erg_ctrl_sim.path_reconstruct()

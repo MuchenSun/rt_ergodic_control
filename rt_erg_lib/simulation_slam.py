@@ -61,23 +61,42 @@ class simulation_slam():
         fig = plt.gcf()
         points = ax.scatter([], [], s=point_size, c='red')
 
+        sensor_points = []
+        for id in range(self.landmarks.shape[0]):
+            sensor_point = ax.plot([], [], color='orange')
+            sensor_points.append(sensor_point)
+
         def sub_animate(i):
+            # print("iter: ", i)
+
             if(show_traj):
                 points.set_offsets(np.array([xt[:i, 0], xt[:i, 1]]).T)
             else:
                 points.set_offsets(np.array([[xt[i, 0]], [xt[i, 1]]]).T)
 
-            sensor_points = []
-            for item in self.log['observation'][i]:
-                sensor_point = ax.plot([xt[i, 0],self.landmarks[item][0]], [xt[i, 1],self.landmarks[item][1]], color='orange')
-                sensor_points.append(sensor_point)
+            # sensor_points = []
+            # for item in self.log['observation'][i]:
+            #     sensor_point = ax.plot([xt[i, 0],self.landmarks[item][0]], [xt[i, 1],self.landmarks[item][1]], color='orange')
+            #     sensor_points.append(sensor_point)
+
+            for id in range(self.landmarks.shape[0]):
+                if id in self.log['observation'][i]:
+                    sensor_points[id][0].set_xdata([xt[i, 0], self.landmarks[id][0]])
+                    sensor_points[id][0].set_ydata([xt[i, 1], self.landmarks[id][1]])
+                else:
+                    sensor_points[id][0].set_xdata([])
+                    sensor_points[id][0].set_ydata([])
 
             if show_label:
                 cx = round(xt[i, 0], 2)
                 cy = round(xt[i, 1], 2)
                 cth = round(xt[i, 2], 2)
                 quiver1 = ax.quiver(cx, cy, cos(cth), sin(cth), color='red')
-                ret = [points, quiver1]
+                if i == self.tf-1:
+                    quiver1.remove()
+                    ret = [points]
+                else:
+                    ret = [points, quiver1]
                 for item in sensor_points:
                     ret.append(item[0])
                 return ret
