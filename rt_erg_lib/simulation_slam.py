@@ -4,10 +4,10 @@ import autograd.numpy as np
 from .utils import convert_ck2dist, convert_traj2ck
 from tqdm import tqdm
 import time
-from numpy import sin, cos
+from numpy import sin, cos, sqrt
 
-class simulation():
-    def __init__(self, size, init_state, t_dist, model, erg_ctrl, env, tf):
+class simulation_slam():
+    def __init__(self, size, init_state, t_dist, model, erg_ctrl, env, tf, landmarks, sensor_range):
         self.size = size
         self.init_state = init_state
         self.erg_ctrl = erg_ctrl
@@ -16,14 +16,24 @@ class simulation():
         self.t_dist = t_dist
         self.model = model
         self.exec_times = np.zeros(tf)
+        self.landmarks = landmarks
+        self.sensor_range = sensor_range
 
     def start(self, report=False):
-        self.log = {'trajectory': []}
+        self.log = {'trajectory': [], 'observation': []}
         state = self.env.reset(self.init_state)
         for t in tqdm(range(self.tf)):
             start_time = time.time()
             ctrl = self.erg_ctrl(state)
             state = self.env.step(ctrl)
+            obs = []
+            for i in range(self.landmarks.shape[0]):
+
+                item = self.landmarks[i]
+                dist = sqrt((item[0]-state[0])**2 + (item[1]-state[1])**2)
+                if(dist <= self.sensor_range):
+                    obs.append(i)
+            self.log['observation'].append(obs)
             self.log['trajectory'].append(state)
             self.exec_times[t] = time.time()-start_time
         print("simulation finished.")
@@ -45,6 +55,7 @@ class simulation():
         [xy, vals] = self.t_dist.get_grid_spec()
         xt = np.stack(self.log['trajectory'])
         plt.contourf(*xy, vals, levels=20)
+        plt.scatter(self.landmarks[:,0], self.landmarks[:,1], color='white')
         ax = plt.gca()
         ax.set_aspect('equal', 'box')
         fig = plt.gcf()
@@ -55,14 +66,26 @@ class simulation():
                 points.set_offsets(np.array([xt[:i, 0], xt[:i, 1]]).T)
             else:
                 points.set_offsets(np.array([[xt[i, 0]], [xt[i, 1]]]).T)
+
+            sensor_points = []
+            for item in self.log['observation'][i]:
+                sensor_point = ax.plot([xt[i, 0],self.landmarks[item][0]], [xt[i, 1],self.landmarks[item][1]], color='orange')
+                sensor_points.append(sensor_point)
+
             if show_label:
                 cx = round(xt[i, 0], 2)
                 cy = round(xt[i, 1], 2)
                 cth = round(xt[i, 2], 2)
                 quiver1 = ax.quiver(cx, cy, cos(cth), sin(cth), color='red')
-                return [points, quiver1]
+                ret = [points, quiver1]
+                for item in sensor_points:
+                    ret.append(item[0])
+                return ret
             else:
-                return [points]
+                ret = [points]
+                for item in sensor_points:
+                    ret.append(item[0])
+                return ret
 
         anim = animation.FuncAnimation(fig, sub_animate, frames=self.tf, interval=(1000/rate), blit=True)
         plt.show()
@@ -77,3 +100,4 @@ class simulation():
         ax = plt.gca()
         ax.set_aspect('equal', 'box')
         plt.show()
+        return plt.gcf()
