@@ -94,6 +94,10 @@ class simulation_slam():
                 quiver1 = ax.quiver(cx, cy, cos(cth), sin(cth), color='red')
                 if i == self.tf-1:
                     quiver1.remove()
+                    for id in range(self.landmarks.shape[0]):
+                        sensor_points[id][0].set_xdata([])
+                        sensor_points[id][0].set_ydata([])
+                    points.set_offsets(np.array([[xt[i, 0]], [xt[i, 1]]]).T)
                     ret = [points]
                 else:
                     ret = [points, quiver1]
