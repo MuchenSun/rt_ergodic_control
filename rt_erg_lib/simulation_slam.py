@@ -41,17 +41,19 @@ class simulation_slam():
             print(self.exec_times[1:10])
             print("mean execution time: {0:.6f}(s), standard deviation: {1:.6f}(s)".format(np.mean(self.exec_times), np.std(self.exec_times)))
 
-    def plot(self, point_size=1):
+    def plot(self, point_size=1, save=None):
         [xy, vals] = self.t_dist.get_grid_spec()
         plt.contourf(*xy, vals, levels=20)
         xt = np.stack(self.log['trajectory'])
         plt.scatter(xt[:self.tf, 0], xt[:self.tf, 1], s=point_size, c='red')
         ax = plt.gca()
         ax.set_aspect('equal', 'box')
+        if save is not None:
+            plt.savefig(save)
         plt.show()
-        return plt.gcf()
+        # return plt.gcf()
 
-    def animate(self, point_size=1, show_label=False, show_traj=True, rate=50):
+    def animate(self, point_size=1, show_label=False, show_traj=True, save=None, rate=50):
         [xy, vals] = self.t_dist.get_grid_spec()
         xt = np.stack(self.log['trajectory'])
         plt.contourf(*xy, vals, levels=20)
@@ -111,10 +113,14 @@ class simulation_slam():
                 return ret
 
         anim = animation.FuncAnimation(fig, sub_animate, frames=self.tf, interval=(1000/rate), blit=True)
+        if save is not None:
+            Writer = animation.writers['ffmpeg']
+            writer = Writer(fps=40, metadata=dict(artist='simulation_slam'), bitrate=5000)
+            anim.save(save, writer=writer)
         plt.show()
-        return anim
+        # return anim
 
-    def path_reconstruct(self):
+    def path_reconstruct(self, save=None):
         xy, vals = self.t_dist.get_grid_spec()
         path = np.stack(self.log['trajectory'])[:self.tf, self.model.explr_idx]
         ck = convert_traj2ck(self.erg_ctrl.basis, path)
@@ -122,5 +128,6 @@ class simulation_slam():
         plt.contourf(*xy, val.reshape(50,50), levels=20)
         ax = plt.gca()
         ax.set_aspect('equal', 'box')
+        if save is not None:
+            plt.savefig(save)
         plt.show()
-        return plt.gcf()
